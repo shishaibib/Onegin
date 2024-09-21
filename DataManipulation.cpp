@@ -1,26 +1,33 @@
 #include "HeaderData.h"
 
-int File_Reader(char Output_Text[NUMBEROFSTRINGS][LENGOFSTRINGS])
+int Read_Text_From_File(char** output_text, int size_of_file, int* number_of_strings, char **onegin_adress)
 {
+    char temp_symbol = 0;
+    FILE *onegin_text = fopen("Onegin.txt", "r");
 
-    FILE *onegin_text = fopen("Onegin.txt", "r"/*?*/);
+    int amount_of_symbol_in_last_string = 0;
 
     if(onegin_text != NULL)
     {
 
-        char Input_Text[NUMBEROFSTRINGS][LENGOFSTRINGS] = {};
-
-        for(int i = 0; i < NUMBEROFSTRINGS; i++)
+        for(int i = 0; i < (size_of_file - *number_of_strings) && temp_symbol != EOF; i++)
         {
-            fgets(Input_Text[i], LENGOFSTRINGS, onegin_text);
+            amount_of_symbol_in_last_string ++;
 
-            int j = 0;
+            temp_symbol = getc(onegin_text);    //fread (записать в м у) считать строку
+            (*output_text)[i] = temp_symbol;
 
-            for(j = 0; j < LENGOFSTRINGS && Input_Text[i][j] != '\n'; j++)
+            if(temp_symbol == '\n')
             {
-                Output_Text[i][j] = Input_Text[i][j];
+
+                *number_of_strings += 1;
+                onegin_adress[*number_of_strings] = onegin_adress[*number_of_strings - 1] + amount_of_symbol_in_last_string;
+
+                printf("Length_Of_String_%d = %d\n", *number_of_strings, amount_of_symbol_in_last_string);
+                amount_of_symbol_in_last_string = 0;
+
             }
-            Output_Text[i][j] = '\n';
+
         }
 
     }
@@ -31,13 +38,10 @@ int File_Reader(char Output_Text[NUMBEROFSTRINGS][LENGOFSTRINGS])
 
 }
 
-int Fill_Adress(char **onegin_adress, char Output_Text[NUMBEROFSTRINGS][LENGOFSTRINGS])
+off_t Fsize(const char *filename)
 {
-
-    for (int i = 0; i < NUMBEROFSTRINGS; i++)
-    {
-        onegin_adress[i] = Output_Text[i];
-    }
-
-    return 0;
+    struct stat st;
+    if (stat(filename, &st) == 0)
+        return st.st_size;
+    return -1;
 }

@@ -1,34 +1,46 @@
 #include "HeaderData.h"
 
-int main()
-{
+int main()    //!!!!!!!!!!!!!!!!!!!! comparatori
+{             // !!!!!!!!!!!!!!!!!!!!!структуры
 
-    char Output_Text[NUMBEROFSTRINGS][LENGOFSTRINGS] = {};
-    char **onegin_adress = 0;
-    onegin_adress = (char **)calloc(NUMBEROFSTRINGS + 1, sizeof(char*));
+    onegin_parametrs onegin = {0, 0, 0};
 
-    File_Reader(Output_Text);
+    int size_of_file = Fsize("Onegin.txt");
+    printf("size:%d\n",size_of_file);
 
+    onegin.onegin_adress = (char **)calloc(size_of_file, sizeof(char*));
+    onegin.output_text = (char *)calloc(size_of_file, sizeof(char*));
+    onegin.onegin_adress[0] = &(onegin.output_text[0]);
+
+    Read_Text_From_File(&onegin.output_text, size_of_file, &onegin.number_of_strings, onegin.onegin_adress);
+    printf("number of strings =  %d \n",onegin.number_of_strings);
     printf("The text was:\n");
 
-    for (int i = 0; i < NUMBEROFSTRINGS; i++)
-        printf("%s", Output_Text[i]);
+    for (int i = 0; i < size_of_file; i++)
+        printf("%c", onegin.output_text[i]);
 
-    onegin_adress[0] = &(Output_Text[0][0]);
+    Sorting_Strings(onegin.onegin_adress, onegin.number_of_strings);               /* компаратором чтоб убить копипаст*/
 
-    Fill_Adress(onegin_adress, Output_Text);
+    Sorting_Strings_Inversive(onegin.onegin_adress, onegin.number_of_strings);
 
-    Sorting_Strings(onegin_adress);
+    printf("\n After sort:\n");
 
-    Sorting_Strings_Inversive(onegin_adress);
+    for (int i = 0; i < onegin.number_of_strings; i++)
+    {
+        int j = 0;
+        while(onegin.onegin_adress[i][j] != '\n')
+        {
+            printf("%c",onegin.onegin_adress[i][j]);
+            j++;
+        }
 
-    printf("\n");
-    printf("After sort:\n");
+        printf("\n");
+    }
 
-    for (char i = 0; i < NUMBEROFSTRINGS; i++)
-        printf("%s",onegin_adress[i]);
+    free(onegin.onegin_adress);
+    free(onegin.output_text);
 
-    return 0;
+     return 0;
 
 }
 
